@@ -1,0 +1,150 @@
+<apex:page docType="html-5.0" standardStylesheets="false" lightningStylesheets="true" showHeader="false" controller="UserWelcomePageController" action="{!init}" >
+    <html>
+        <head>
+            <apex:stylesheet value="/slds/css/1e8NqPQXNhgLAomK1CZM1A/min/lightningstylesheets/one:oneNamespace,force:sldsTokens,force:base,force:oneSalesforceSkin,force:levelOneDensity,force:themeTokens,force:formFactorLarge/slds.css" />        
+        </head>
+        <head>
+            <script>
+            function logout() {
+                window.location.href = 'UserLoginPage';
+            }
+            </script>
+        </head>
+        <body>
+            <div class="header">
+                <button onclick="logout()">Logout</button>
+            </div>
+            <!-- Left side of the screen -->
+            <apex:form >
+                <apex:pageBlock title="User Information" mode="Edit" id="outputField">
+                    <apex:pageBlockButtons >
+                        <apex:commandButton value="Edit" action="{!toggleEditMode}" rendered="{!NOT(isEditMode)}" reRender="outputField" />
+                        <apex:commandButton value="Save" action="{!saveUserInfo}" rendered="{!isEditMode}" reRender="outputField"/>
+                    </apex:pageBlockButtons>
+                    <apex:pageBlockSection columns="2" >
+                        <apex:outputField label="First Name" value="{!user[0].First_Name__c}" rendered="{!NOT(isEditMode)}" />
+                        <apex:outputField label="Last Name" value="{!user[0].Name}" rendered="{!NOT(isEditMode)}" />
+                        <apex:outputField label="Email" value="{!user[0].Email__c}" rendered="{!NOT(isEditMode)}"/>
+                        <apex:outputField label="Phone" value="{!user[0].Phone__c}" rendered="{!NOT(isEditMode)}"/>
+                        <apex:inputField label="First Name" value="{!user[0].First_Name__c}" rendered="{!isEditMode}" ignoreEditPermissionForRendering="true" />
+                        <apex:inputField label="Last Name" value="{!user[0].Name}" rendered="{!isEditMode}" ignoreEditPermissionForRendering="true" />
+                        <apex:inputField label="Email" value="{!user[0].Email__c}" rendered="{!isEditMode}" ignoreEditPermissionForRendering="true"/>
+                        <apex:inputField label="Phone" value="{!user[0].Phone__c}" rendered="{!isEditMode}" ignoreEditPermissionForRendering="true"/>
+                    </apex:pageBlockSection>
+                </apex:pageBlock>
+            </apex:form>
+            
+            <!-- Right side of the screen -->
+            <apex:form >
+                <apex:pageBlock title="Select a City" id="CityPageBlock">
+                    <apex:pageBlockButtons id="bottoms">
+                        <apex:commandButton value="Edit" action="{!toggleEditMode}" rendered="{!NOT(isEditMode)}" reRender="CityPageBlock"/>
+                        <apex:commandButton value="Save" action="{!saveCityInfo}" rendered="{!isEditMode}" reRender="CityPageBlock"/>
+                    </apex:pageBlockButtons>
+                    <apex:pageBlockSection >
+                        <apex:selectList label="City:" value="{!selectedCityId}" size="1">
+                            <apex:selectOptions value="{!cityOptions}"/>
+                            <apex:actionSupport event="onchange" action="{!setSelectedCityId}" reRender="rates"/>
+                        </apex:selectList>
+                    </apex:pageBlockSection>
+                    <apex:pageBlockSection id="rates" rendered="{!selectedCity != null}" >
+                        <apex:outputField value="{!selectedCity.Gas_Rate__c}" rendered="{!NOT(isEditMode)}"/>
+                        <apex:outputField value="{!selectedCity.Water_Rate__c}" rendered="{!NOT(isEditMode)}"/>
+                        <apex:outputField value="{!selectedCity.Electricity_Rate__c}" rendered="{!NOT(isEditMode)}"/>
+                        <apex:inputField value="{!selectedCity.Gas_Rate__c}" rendered="{!isEditMode}" ignoreEditPermissionForRendering="true" />
+                        <apex:inputField value="{!selectedCity.Water_Rate__c}" rendered="{!isEditMode}" ignoreEditPermissionForRendering="true" />
+                        <apex:inputField value="{!selectedCity.Electricity_Rate__c}" rendered="{!isEditMode}" ignoreEditPermissionForRendering="true" />
+                    </apex:pageBlockSection>
+                </apex:pageBlock>
+            </apex:form>
+            
+            <apex:form id="form">
+                <apex:actionFunction action="{!Save}" name="Save" reRender="form"/>
+                <apex:pageBlock mode="edit" id="pb" title="User List">
+                    <apex:pageBlockSection columns="1" id="sec2">
+                        <apex:pageBlockTable value="{!wrapperList}" var="rec" width="100%" id="pbTable">
+                            <apex:column >
+                                <apex:facet name="header">
+                                    Select
+                                </apex:facet>
+                                <apex:inputCheckbox value="{!rec.isSelEdit}" id="inputBox" title="Edit"/>
+                            </apex:column>
+                            
+                            First Name
+                            <apex:facet name="header"></apex:facet>
+                            <apex:column value="{!rec.user.First_Name__c}" style="{!IF(rec.user.Debt_Amount__c < -500, 'color:red;', '')}" rendered="{!(!rec.isSelEdit)}"/>
+                            <apex:column >
+                                <apex:inputField value="{!rec.user.First_Name__c}" rendered="{!rec.isSelEdit}" ignoreEditPermissionForRendering="true"/>
+                            </apex:column>
+                            
+                            Last Name
+                            <apex:facet name="header"></apex:facet>
+                            <apex:column headerValue="Last Name" value="{!rec.user.Name}" style="{!IF(rec.user.Debt_Amount__c < -500, 'color:red;', '')}" rendered="{!(!rec.isSelEdit)}"/>
+                            <apex:column >
+                                <apex:inputField value="{!rec.user.Name}" rendered="{!rec.isSelEdit}" ignoreEditPermissionForRendering="true"/>
+                            </apex:column>
+                            
+                            State
+                            <apex:facet name="header"></apex:facet>
+                            <apex:column value="{!rec.user.State__c}" rendered="{!(!rec.isSelEdit)}"/>
+                            <apex:column >
+                                <apex:inputField value="{!rec.user.State__c}" rendered="{!rec.isSelEdit}" ignoreEditPermissionForRendering="true"/>
+                            </apex:column>
+                            
+                            City
+                            <apex:facet name="header"></apex:facet>
+                            <apex:column value="{!rec.user.City__c}" rendered="{!(!rec.isSelEdit)}"/>
+                            <apex:column >
+                                <apex:inputField value="{!rec.user.City__c}" rendered="{!rec.isSelEdit}" ignoreEditPermissionForRendering="true"/>
+                            </apex:column>
+                            
+                            Phone
+                            <apex:facet name="header"></apex:facet>
+                            <apex:column value="{!rec.user.Phone__c}" rendered="{!(!rec.isSelEdit)}"/>
+                            <apex:column >
+                                <apex:inputField value="{!rec.user.Phone__c}" rendered="{!rec.isSelEdit}" ignoreEditPermissionForRendering="true"/>
+                            </apex:column>
+                            
+                            Email
+                            <apex:facet name="header"></apex:facet>
+                            <apex:column value="{!rec.user.Email__c}" rendered="{!(!rec.isSelEdit)}"/>
+                            <apex:column >
+                                <apex:inputField value="{!rec.user.Email__c}" rendered="{!rec.isSelEdit}" ignoreEditPermissionForRendering="true"/>
+                            </apex:column>
+                            
+                            Debt Amount
+                            <apex:facet name="header"></apex:facet>
+                            <apex:column value="{!rec.user.Debt_Amount__c}" rendered="{!(!rec.isSelEdit)}"/>
+                            <apex:column >
+                                <apex:inputField value="{!rec.user.Debt_Amount__c}" rendered="{!rec.isSelEdit}" ignoreEditPermissionForRendering="true"/>
+                            </apex:column>
+                            
+                            
+                        </apex:pageBlockTable>
+                    </apex:pageBlockSection>
+                    <apex:pageBlockSection id="sid" columns="4">
+                        <apex:commandButton value="Action" action="{!editDelaction}" id="but" />
+                        <apex:commandButton value="Update" onclick="Save(); return false;" id="but1" rendered="{!SaveMethod}" />
+                    </apex:pageBlockSection>
+                </apex:pageBlock>
+            </apex:form>
+            <apex:form id="paymentsForm">
+                <apex:actionFunction action="{!displayPayments}" name="displayPayments" reRender="paymentsTable"/>
+                <apex:pageBlock mode="edit" id="paymentsBlock" title="Payments">
+                    <apex:pageBlockSection >
+                        <apex:outputLabel value="Select a user:"/>
+                        <apex:selectList value="{!selectedUserId}" size="1">
+                            <apex:selectOptions value="{!userOptions}"/>
+                            <apex:actionSupport event="onchange" action="{!setSelectedUser}" reRender="paymentsTable"/>
+                        </apex:selectList>
+                    </apex:pageBlockSection>
+                    <apex:pageBlockTable value="{!payments}" var="payment" id="paymentsTable">
+                        <apex:column headerValue="Payment ID" value="{!payment.Id}"/>
+                        <apex:column headerValue="Amount" value="{!payment.Amount__c}"/>
+                        <apex:column headerValue="Payment Date" value="{!payment.Payment_Date__c}"/>
+                    </apex:pageBlockTable>
+                </apex:pageBlock>
+            </apex:form>
+        </body>
+    </html>
+</apex:page>

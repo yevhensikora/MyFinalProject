@@ -1,0 +1,171 @@
+<apex:page standardStylesheets="false" lightningStylesheets="true" showHeader="false" docType="html-5.0" controller="UserHomePageController" action="{!init}" >
+    <html>
+        <head>
+            <apex:stylesheet value="/slds/css/1e8NqPQXNhgLAomK1CZM1A/min/lightningstylesheets/one:oneNamespace,force:sldsTokens,force:base,force:oneSalesforceSkin,force:levelOneDensity,force:themeTokens,force:formFactorLarge/slds.css" />        
+        </head>
+       <head>
+            <script>
+            function logout() {
+                window.location.href = 'UserLoginPage';
+            }
+            </script>
+        </head>
+        <body>
+            <div class="header">
+                <button onclick="logout()">Logout</button>
+            </div>
+            <apex:pageMessages id="msgs"/>
+            <apex:form >
+                <apex:pageBlock title="User Information" mode="Edit" id="outputField">
+                    <apex:pageBlockButtons >
+                        <apex:commandButton value="Edit" action="{!toggleEditMode}" rendered="{!NOT(isEditMode)}" reRender="outputField, msgs" />
+                        <apex:commandButton value="Save" action="{!saveUserInfo}" rendered="{!isEditMode}" reRender="outputField, msgs"/>
+                    </apex:pageBlockButtons>
+                    <apex:pageBlockSection columns="2" >
+                        <apex:outputField label="First Name" value="{!user[0].First_Name__c}" rendered="{!NOT(isEditMode)}" />
+                        <apex:outputField label="Last Name" value="{!user[0].Name}" rendered="{!NOT(isEditMode)}" />
+                        <apex:outputField label="Email" value="{!user[0].Email__c}" rendered="{!NOT(isEditMode)}"/>
+                        <apex:outputField label="Phone" value="{!user[0].Phone__c}" rendered="{!NOT(isEditMode)}"/>
+                        <apex:inputField label="First Name" value="{!user[0].First_Name__c}" rendered="{!isEditMode}" ignoreEditPermissionForRendering="true" />
+                        <apex:inputField label="Last Name" value="{!user[0].Name}" rendered="{!isEditMode}" ignoreEditPermissionForRendering="true" />
+                        <apex:inputField label="Email" value="{!user[0].Email__c}" rendered="{!isEditMode}" ignoreEditPermissionForRendering="true" />
+                        <apex:inputField label="Phone" value="{!user[0].Phone__c}" rendered="{!isEditMode}" ignoreEditPermissionForRendering="true" />
+                        <apex:outputField label="Balance" value="{!user[0].Balance__c}"/>
+                        <apex:outputField label="Debt Amount" value="{!user[0].Debt_Amount__c}"/>
+                    </apex:pageBlockSection>
+                </apex:pageBlock>
+            </apex:form>
+            
+            <apex:form >
+                <apex:pageBlock title="City Information" mode="Edit" id="CityField" >
+                    <apex:pageBlockButtons >
+                        <apex:commandButton value="Edit" action="{!toggleEditMode}" rendered="{!NOT(isEditMode)}" reRender="CityField" />
+                        <apex:commandButton value="Save" action="{!saveCityInfo}" rendered="{!isEditMode}" reRender="CityField" />
+                    </apex:pageBlockButtons>
+                    <apex:pageBlockSection columns="2">
+                        <apex:outputField label="State" value="{!user[0].State__c}" rendered="{!NOT(isEditMode)}"/>
+                        <apex:outputField label="City" value="{!user[0].City__c}" rendered="{!NOT(isEditMode)}"/>
+                        <apex:selectList value="{!stateName}" size="1" label="State" rendered="{!isEditMode}">
+                            <apex:selectOptions value="{!states}"/>
+                            <apex:actionSupport event="onchange" action="{!getCities}"/> 
+                        </apex:selectList>
+                        <apex:selectList value="{!cityName}" size="1" label="City" rendered="{!isEditMode}">
+                            <apex:selectOptions value="{!cities}"/>
+                        </apex:selectList>
+                        <apex:outputText label="Gas Rate" value="{!user[0].City__r.Gas_Rate__c} $" rendered="{!NOT(isEditMode)}"/>
+                        <apex:outputText label="Water Rate" value="{!user[0].City__r.Water_Rate__c} $" rendered="{!NOT(isEditMode)}"/>
+                        <apex:outputText label="Electricity Rate" value="{!user[0].City__r.Electricity_Rate__c} $" rendered="{!NOT(isEditMode)}"/>
+                    </apex:pageBlockSection>
+                </apex:pageBlock>  
+            </apex:form>
+            
+            <apex:pageBlock title="Information Panel">
+                <apex:tabPanel switchType="client">
+                    <apex:tab label="Meter Reading" title="Before entering the figures into the system, make sure that you have entered them for the previous month. Or enter now by selecting a date.">
+                        <apex:form >
+                            <apex:pageBlock >   
+                                <apex:pageBlockSection >
+                                    <apex:input label="Reading Date" type="date" value="{!xDate}" />
+                                    <apex:selectList value="{!selectedService}" label="Reading Type" size="1">
+                                        <apex:selectOption itemLabel="Gas" itemValue="Gas"/>
+                                        <apex:selectOption itemLabel="Water" itemValue="Water"/>
+                                        <apex:selectOption itemLabel="Electricity" itemValue="Electricity"/>
+                                    </apex:selectList>
+                                    <apex:inputText value="{!meterReading}" label="{!selectedService} Reading" />                          
+                                </apex:pageBlockSection>
+                                <apex:pageBlockButtons >
+                                    <apex:commandButton value="Send" action="{!saveReading}"/>
+                                </apex:pageBlockButtons>
+                            </apex:pageBlock>
+                        </apex:form>
+                    </apex:tab>
+                    
+                    <apex:tab label="My Balance">
+                        <apex:form >
+                            <apex:pageBlock >
+                                <apex:pageBlockSection >
+                                    <apex:commandButton value="Top up your wallet" action="{!TopUYourWallet}" />
+                                    <apex:inputText label="Enter the top-up amount" value="{!topUpAmount}"/>
+                                </apex:pageBlockSection>
+                            </apex:pageBlock>
+                        </apex:form>
+                    </apex:tab>
+                    
+                    <apex:tab label="Pay">
+                        <apex:form >
+                            <apex:pageBlock >
+                                <apex:pageBlockSection >
+                                    <apex:pageBlockSectionItem >
+                                        <apex:outputLabel value="Payment Type"/>
+                                        <apex:selectList value="{!paymentType}" size="1">
+                                            <apex:selectOption itemValue="allMonth" itemLabel="All month"/>
+                                            <apex:selectOption itemValue="byParts" itemLabel="By parts"/>
+                                            <apex:commandButton value="Choose" />
+                                        </apex:selectList>
+                                    </apex:pageBlockSectionItem>
+                                    <apex:pageBlockSectionItem rendered="{!paymentType == 'byParts'}">
+                                        <apex:outputLabel value="Number of Payments"/>
+                                        <apex:selectList value="{!numberOfPayments}" size="1">
+                                            <apex:selectOption itemValue="1" itemLabel="1"/>
+                                            <apex:selectOption itemValue="2" itemLabel="2"/>
+                                            <apex:selectOption itemValue="3" itemLabel="3"/>
+                                            <apex:selectOption itemValue="4" itemLabel="4"/>
+                                            <apex:selectOption itemValue="5" itemLabel="5"/>
+                                            <apex:selectOption itemValue="6" itemLabel="6"/>
+                                            <apex:selectOption itemValue="7" itemLabel="7"/>
+                                            <apex:selectOption itemValue="8" itemLabel="8"/>
+                                            <apex:selectOption itemValue="9" itemLabel="9"/>
+                                            <apex:selectOption itemValue="10" itemLabel="10"/>
+                                            <apex:selectOption itemValue="11" itemLabel="11"/>
+                                            <apex:selectOption itemValue="12" itemLabel="12"/>
+                                        </apex:selectList>
+                                    </apex:pageBlockSectionItem>
+                                    <apex:pageBlockSection >
+                                        <div style="float:center;">
+                                            <apex:inputText label="Payment Amount" value="{!paymentAmount}"/>
+                                        </div>
+                                    </apex:pageBlockSection>
+                                </apex:pageBlockSection>
+                                <apex:pageBlockButtons >
+                                    <apex:commandButton value="Pay" action="{!pay}" />
+                                </apex:pageBlockButtons>
+                            </apex:pageBlock>
+                        </apex:form>
+                    </apex:tab>
+                    
+                    <apex:tab label="History of Readings">
+                        <apex:pageBlock title="Meter Reading History">
+                            <apex:pageBlockTable value="{!ListOfMeterReadings}" var="MT">
+                                <apex:column value="{! MT.Gas_Reading__c}"/>
+                                <apex:column value="{! MT.Water_Reading__c}"/>
+                                <apex:column value="{! MT.Electricity_Reading__c}"/>
+                                <apex:column value="{! MT.Reading_Date__c}"/>
+                            </apex:pageBlockTable>
+                        </apex:pageBlock>
+                    </apex:tab>
+                    
+                    <apex:tab label="History of Payments">
+                        <apex:pageBlock title="Payments History">
+                            <apex:pageBlockTable value="{!ListOfPayments}" var="Payments">
+                                <apex:column value="{! Payments.Amount__c}"/>
+                                <apex:column value="{! Payments.Payment_Date__c}"/>
+                                <apex:column value="{! Payments.Is_Payd__c}"/>
+                            </apex:pageBlockTable>
+                        </apex:pageBlock>
+                    </apex:tab>
+                    <apex:tab label="Chat with Manager">
+                        <apex:pageBlock title="Manager Chat">
+                            <apex:form >
+                                <apex:pageMessages />
+                                <apex:pageBlockSection columns="1">
+                                    <apex:inputText value="{!managerMessage}" label="Type your message here" />
+                                </apex:pageBlockSection>
+                                <apex:commandButton value="Send" action="{!sendEmail}"/>
+                            </apex:form>
+                        </apex:pageBlock>
+                    </apex:tab>
+                </apex:tabPanel>
+            </apex:pageBlock>
+        </body>
+    </html>
+</apex:page>

@@ -1,0 +1,20 @@
+<apex:page standardStylesheets="false" lightningStylesheets="true" showHeader="false" controller="UserLoginController">
+    <head>
+        <apex:stylesheet value="/slds/css/1e8NqPQXNhgLAomK1CZM1A/min/lightningstylesheets/one:oneNamespace,force:sldsTokens,force:base,force:oneSalesforceSkin,force:levelOneDensity,force:themeTokens,force:formFactorLarge/slds.css" />        
+    </head>
+    <apex:pageMessages id="msgs"/>
+    <apex:form >
+        <apex:pageBlock title="User Login">
+            <apex:pageBlockSection columns="2">
+                <apex:inputText value="{!email}" required="true" label="Email"/>
+                <apex:inputSecret value="{!password}" required="true" label="Password"/>
+            </apex:pageBlockSection>
+            <apex:pageBlockButtons >
+                <apex:commandButton styleClass="btn" value="Login" action="{!loginUser}" rerender="msgs"/>
+            </apex:pageBlockButtons>
+        </apex:pageBlock>
+        <div align="center" style="margin-top:10px;">
+            <apex:outputLink value="{!$Page.RegistrationPage}" >Don't have an account? Register</apex:outputLink>
+        </div>
+    </apex:form>
+</apex:page>

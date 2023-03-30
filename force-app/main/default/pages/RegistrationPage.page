@@ -1,0 +1,27 @@
+<apex:page standardStylesheets="false" lightningStylesheets="true" showHeader="false" controller="RegisterPageController">
+    <head>
+        <apex:stylesheet value="/slds/css/1e8NqPQXNhgLAomK1CZM1A/min/lightningstylesheets/one:oneNamespace,force:sldsTokens,force:base,force:oneSalesforceSkin,force:levelOneDensity,force:themeTokens,force:formFactorLarge/slds.css" />        
+    </head>
+    <apex:pageMessages ></apex:pageMessages>
+    <apex:form >
+        <apex:pageBlock >
+            <apex:pageBlockSection columns="2">
+                <apex:selectList value="{!stateName}" size="1" label="State">
+                    <apex:selectOptions value="{!states}"/>
+                    <apex:actionSupport event="onchange" action="{!getCities}"/> 
+                </apex:selectList>
+                <apex:selectList value="{!cityName}" size="1" label="City">
+                    <apex:selectOptions value="{!cities}"/>
+                </apex:selectList>
+                <apex:inputText value="{!email}" label="Email" />
+                <apex:inputSecret value="{!password}" label="Password" />
+                <apex:inputText value="{!lastName}" label="Last Name"/>
+                <apex:inputText value="{!firstName}" label="First Name"/>
+            </apex:pageBlockSection>
+            <apex:pageBlockButtons >
+                <apex:commandButton styleClass="btn" value="Register" action="{!registerUser}"/>
+                <apex:commandButton value="I already have account" action="{!redirectToLoginPage}"/>
+            </apex:pageBlockButtons>
+        </apex:pageBlock>
+    </apex:form>
+</apex:page>
